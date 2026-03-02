@@ -40,10 +40,6 @@ jobs:
         with:
           # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
           creds: ${{ secrets.ZURE_SPN_CREDENTIALS }}
-          # ClientId of the Azure Service principal created.
-          client-id: # optional
-          # TenantId of the Azure Service principal created.
-          tenant-id: # optional
           # Azure subscriptionId
           subscription-id: # optional
           
