@@ -39,7 +39,7 @@ jobs:
         uses: Azure/login@v2.3.0
         with:
           # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
-          creds: ${{ secrets.ZURE_SPN_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_SPN_CREDENTIALS }}
           # Azure subscriptionId
           subscription-id: # optional
           
