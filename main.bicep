@@ -3,36 +3,48 @@ targetScope = 'resourceGroup'
 param location string
 param vnetName string
 param vnetAddressPrefix string
-param workloadSubnetName string
-param workloadSubnetPrefix string
+param subnetAddressPrefix string
+param subnetName string
+param nsgname string
+param staaccname string
 
-module vnet '../modules/network.bicep' = {
-  name: 'vnet'
+
+module nsg './modules/nsg.bicep' = {
+  name: 'deploy-nsg'
+  params: {    
+    location: location
+    nsgname: nsgname
+  }
+}
+
+module vnet './modules/network.bicep' = {
+  name: 'deploy-vnet'
   params: {
     location: location
     vnetName: vnetName
     vnetAddressPrefix: vnetAddressPrefix
-    workloadSubnetName: workloadSubnetName
-    workloadSubnetPrefix: workloadSubnetPrefix
-    nsgname: workloadnsgname
+    subnetName: subnetName
+    subnetAddressPrefix: subnetAddressPrefix
+    nsgid: nsg.outputs.nsgid
   }
 }
 
-module snet  '../modules/nsg.bicep' = {
-  name = snet1
+module storageacc  './modules/storage.bicep' = {
+  name: 'deploy-storage-account'
   params: {
     location: location
+    staaccname : staaccname
+    allowedSubnetId : vnet.outputs.subnetId
  }
 }
 
-module storageacc  '../modules/storage.bicep' = {
-  name = stacc
-  params: {
-    location: location
-    allowsubnetId : vnet.properties.subnets[0].id
- }
-}
+output storageAccountName string = storageacc.outputs.storageAccountName
 
+output storageAccountId string = storageacc.outputs.storageAccountId
+
+output subnetResourceId string = vnet.outputs.subnetId
+
+output nsgResourceId string = nsg.outputs.nsgid
 
 
 

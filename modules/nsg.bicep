@@ -1,7 +1,8 @@
 param location string
+param nsgname string
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
-  name: 'nsgWorkload'
+  name: nsgname
   location: location
   properties: {
     securityRules: [
@@ -20,5 +21,6 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
       }
     ]
   }
-  output nsgid string = nsg.resourceId()
 }
+
+output nsgid string = nsg.id

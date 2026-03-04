@@ -1,9 +1,12 @@
 param location string
+param vnetName string
 param vnetAddressPrefix string
-param subnetPrefix string
+param subnetAddressPrefix string
+param subnetName string
+param nsgid string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
-  name: 'myvent'
+  name: vnetName
   location: location
 
   properties: {
@@ -13,15 +16,15 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 
     subnets: [
       {
-        name: 'snet1'
+        name: subnetName
         properties: {
-          addressPrefix: subnetPrefixgit 
-          //networkSecurityGroup: { id: nsg.id }
+          addressPrefix: subnetAddressPrefix 
+          networkSecurityGroup: { id: nsgid}
         }
       }
     ]
   }
 
-  output subnetid string = vnet.properties.cidrSubnet(0).resourceId()
-  output subnetId string = subnet.id
 }
+
+output subnetId string = resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, subnetName)

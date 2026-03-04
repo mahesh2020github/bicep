@@ -1,8 +1,9 @@
 param location string
-
+param staaccname string
+param allowedSubnetId string
 
 resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: 'storageacc
+  name: staaccname
   location: location
   kind: 'StorageV2'
 
@@ -12,7 +13,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
   properties: {
     supportsHttpsTrafficOnly: true 
-    networkAcls:{d
+    networkAcls:{
       defaultAction: 'Deny'
 
         virtualNetworkRules: [
@@ -24,3 +25,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
     }   
   }
+}
+
+output storageAccountName string = sa.name
+output storageAccountId string = sa.id
