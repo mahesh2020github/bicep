@@ -268,3 +268,70 @@ PS C:\Lab\biceptest\bicep> az deployment group validate --resource-group rgMyAss
 
 what-if:
 PS C:\Lab\biceptest\bicep> az deployment group what-if --resource-group rgMyAssessment --template-file main.bicep --parameters parameters/dev.bicepparam
+
+
+# RBAC design  for the "drop zone" internal platform
+The RBAC design  for the "drop zone" internal platform artifacts (deployments logs, export files, configuation bundels)
+
+## 1. Identities in the Solution
+The design contains the following identities
+ 
+a. Platform Engineering Team (Human users / Azure AD Group)
+A Engineering team is responsible for managing and maintaining the workloads.
+ 
+ 
+b. CI/CD Pipeline Identity (Service Principal or GitHub Actions OIDC identity)
+The Service Principle identity used in the CI/CD pipeline and responsible for deploying Bicep templates.
+ 
+ 
+c. Workload Managed Identity (optional if an application needs access to the Storage Account)
+If any Azure internal services require read access to the storage account, then they use a Managed Identity (secure access without storing credentials or keys)
+
+## 2. Role Assignments + Scope
+
+Identity: Platform-Team (AAD Group)
+Role: Storage Blob Data Contributor
+Scope: Resource Group
+Purpose: To upload, download, and delete artifact files in the container, without full subscription access.
+
+Identity: CI/CD Pipeline Identity (Service Principal)
+Role: Storage Blob Data Contributor
+Scope: Resource Group
+Purpose: To deploy Bicep templates.
+
+Identity: Application Managed Identity
+Role: Storage Blob Data Contributor
+Scope: Storage Account
+Purpose: Read/Write artifact files to the storage account.
+
+## Management Plane vs Data Plane
+Management Plane: workload creation, configuration, and security settings of the storage account.
+Data Plane:  data access with  special RBAC roles (eg: Storage Blob Data Contributor)
+
+### Management Plane:
+Used to create, update, configure resources.
+ 
+Examples: Creating VNet, Subnet, NSG, Updating Storage Account, Configure network rules
+
+Roles involved: Contributor, Storage Account Contributor, Network Contributor
+
+**Note:** These roles manage the resource configuration only and do not for reading or writing blob data in the storage account.
+
+### Data Plane:
+Access permissions on the data inside the storage account, used to access the actual data inside the storage account like read, upload or download blobs
+ 
+Roles involved:
+Storage Blob Data Reader
+Storage Blob Data Contribut
+
+*** Azure distinguish these two planes to have strict security boundaries bewteen infrastrucgure management and data access
+ 
+## 4. Smallest Possible Scope for Each Role
+The smallest possible scope with Least Privilege approach, make sure minimal, locked-down and controlled access to the storage workloads.
+ 
+Here, the smallest scope for the data plane operations is at container level(read/write/delete blobs).
+ 
+Instead of giving an application "Storage Blob Data Reader" on the entire storage account (which would let it read blobs in every container), we grant that role specifically on the artefacts container.
+ 
+ 
+The application can read everything with this role "Storage Blob Data Reader", so make sure assigne role only at container level, so that it can access only that Container
