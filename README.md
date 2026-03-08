@@ -271,20 +271,20 @@ PS C:\Lab\biceptest\bicep> az deployment group what-if --resource-group rgMyAsse
 
 
 # RBAC design  for the "drop zone" internal platform
-The RBAC design  for the "drop zone" internal platform artifacts (deployments logs, export files, configuation bundels)
+The RBAC design  for the "drop zone" internal platform artifacts files
 
 ## 1. Identities in the Solution
 The design contains the following identities
  
-a. Platform Engineering Team (Human users / Azure AD Group)
-A Engineering team is responsible for managing and maintaining the workloads.
+a. Platform Engineering Team (Human users / Azure AD Group)␣␣
+A Engineering team is responsible for managing and maintaining the workloads.␣␣
  
  
-b. CI/CD Pipeline Identity (Service Principal or GitHub Actions OIDC identity)
+b. CI/CD Pipeline Identity (Service Principal or GitHub Actions OIDC identity)␣␣
 The Service Principle identity used in the CI/CD pipeline and responsible for deploying Bicep templates.
  
  
-c. Workload Managed Identity (optional if an application needs access to the Storage Account)
+c. Workload Managed Identity (optional if an application needs access to the Storage Account)␣␣
 If any Azure internal services require read access to the storage account, then they use a Managed Identity (secure access without storing credentials or keys)
 
 ## 2. Role Assignments + Scope
